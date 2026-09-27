@@ -1,7 +1,6 @@
 import Square from './Square.jsx';
 
 export default function Board({ squares, isXNext, onPlay }) {
-
     function handleClick(i) {
         if (calculateWinner(squares) || squares[i]) return;
 
@@ -25,16 +24,18 @@ export default function Board({ squares, isXNext, onPlay }) {
         for (let i = 0; i < lines.length; i++) {
             const [a, b, c] = lines[i];
             if (squares[a] && squares[a] === squares[b] && squares[a] === squares[c]) {
-                return squares[a];
+                return { winner: squares[a], line: lines[i] };
             }
         }
         return null;
     }
 
     let status;
-    let winner = calculateWinner(squares);
-    if (winner) {
-        status = 'winner: ' + winner;
+    let result = calculateWinner(squares);
+    if (result) {
+        status = <p style={{ color: "limegreen" }} >winner: {result.winner}</p>;
+    } else if (squares.every((square) => square !== null)) {
+        status = <p style={{ color: "orange" }}>Draw</p>;
     } else {
         status = 'Next player: ' + (isXNext ? 'X' : 'O');
     }
@@ -52,9 +53,11 @@ export default function Board({ squares, isXNext, onPlay }) {
                                 const index = row * 3 + col;
                                 return (
                                     <Square
-                                        key={index}
-                                        value={squares[index]}
-                                        onSquareClick={() => handleClick(index)}
+                                    key={index}
+                                    highlight={result?.line.includes(index)}
+                                    value={squares[index]}
+                                    onSquareClick={() => handleClick(index)}
+                                    
                                     />
                                 );
                             })} </div>
